@@ -10,7 +10,7 @@ final case class InitWorkers(
 	destId : Int, 
 	thReduce : Double, 
 	thComplete : Double,
-	maxLag : Int,
+	maxLag : Int
 )
 final case class StartAllreduce(round : Int)
 final case class Scatter(value : Double, srcId : Int, destId : Int, round : Int)

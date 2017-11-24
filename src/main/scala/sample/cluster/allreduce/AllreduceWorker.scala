@@ -217,16 +217,7 @@ object AllreduceWorker {
     val system = ActorSystem("ClusterSystem", config)
     val worker = system.actorOf(Props[AllreduceWorker], name = "worker") //?
 
-    //?
-    // system.scheduler.schedule(2.seconds, 2.seconds) {
-    //   implicit val timeout = Timeout(5 seconds)
-    //   worker ? GreetGroups() onSuccess {
-    //     case s => println(s)
-    //   }
-    // }
+
   }
 
-  // def startUp() = {
-  //   main(Array())
-  // }
 }

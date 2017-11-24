@@ -18,6 +18,7 @@ class AllreduceMaster(
   thReduce : Double, 
   thComplete : Double,
   maxLag : Int,
+  totalRounds: Int
 ) extends Actor {
 
   var workers = Map[Int, ActorRef]()
@@ -57,27 +58,13 @@ class AllreduceMaster(
       println(s"----node ${c.srcId} completes allreduce round ${c.round}")
       if (c.round == round) {
         numComplete += 1
-        if (numComplete >= totalWorkers * thAllreduce && round < 5) {
+        if (numComplete >= totalWorkers * thAllreduce && round < totalRounds) {
           println(s"----${numComplete} (out of ${totalWorkers}) workers complete round ${round}\n")
           round += 1
           startAllreduce()
         }
       }
   }
-
-  // def setupLayout(): Unit =
-  // // Organize grid
-  // for((idx, worker) <- workers){
-  //   val groups = layout.groups(idx)
-  //   for (group <- groups){
-  //     val member_idxs = layout.members(group)
-  //     var members = Set[ActorRef]()
-  //     for(member_id <- member_idxs) members+=workers(member_id)
-  //     val addresses = GridGroupAddresses(group, members)
-  //     println(s"To worker $idx $worker: Sending group address: $addresses")
-  //     worker ! addresses
-  //   }
-  // }
 
   private def register(member: Member): Future[Done] =
     if (member.hasRole("worker")) {
@@ -118,6 +105,7 @@ object AllreduceMaster {
     val thReduce = 0.9
     val thComplete = 0.8
     val maxLag = 1
+    val totalRounds = 3000
     val port = if (args.isEmpty) "2551" else args(0)
 
     val config = ConfigFactory.parseString(s"akka.remote.netty.tcp.port=$port").
@@ -133,13 +121,11 @@ object AllreduceMaster {
         thAllreduce,
         thReduce, 
         thComplete, 
-        maxLag
+        maxLag,
+        totalRounds
       ), 
       name = "master"
     )
   }
 
-  // def startUp(ports: List[String] = List("2551")): Unit = {
-  //   ports foreach( eachPort => main(Array(eachPort)))
-  // }
 }
